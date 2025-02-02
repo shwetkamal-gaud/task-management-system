@@ -1,6 +1,6 @@
 import { getAuth } from "firebase/auth";
 import { db } from "./firebase";
-import { collection, getDocs, query, where, orderBy, addDoc, Timestamp, deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { collection, getDocs, query, where, addDoc, Timestamp, deleteDoc, doc, updateDoc } from "firebase/firestore";
 
 export interface FilteredTask {
     id: string;

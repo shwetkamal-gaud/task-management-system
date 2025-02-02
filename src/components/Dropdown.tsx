@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { DateRange, DateRangePicker, RangeKeyDict } from 'react-date-range'
+import { DateRange, RangeKeyDict } from 'react-date-range'
 interface Props {
     isIcon?: boolean;
     btnBolor: string;

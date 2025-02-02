@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import DownIcon from '../assets/DownIcon';
 import { deleteMultipleTasks, FilteredTask, updateMultipleTasks, deleteTask } from '../firestore';
 import DeleteIcon from '../assets/DeleteIcon';
 import { EditIcon } from 'lucide-react';
-import Modal from './Modal';
+
 
 
 
