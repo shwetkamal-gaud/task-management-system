@@ -1,11 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { FilteredTask,  updateTask } from "../firestore";
+import { updateMultipleTasks } from "../firestore";
 
-export const useUpdateTask = () => {
+export const useUpdateMultipleTaskStatus = () => {
     const queryClient = useQueryClient();
+
     return useMutation({
-        mutationFn: async ({ taskId, updatedFields }: { taskId: string; updatedFields: { title: string, status: string, description: string, taskCategory: string, date: string } }) => {
-            await updateTask(taskId, updatedFields);
+        mutationFn: async ({ taskIds, newStatus }: { taskIds: string[]; newStatus: string }) => {
+            await updateMultipleTasks(taskIds, newStatus);
         },
         onSuccess: () => {
             queryClient.invalidateQueries({
@@ -13,6 +14,4 @@ export const useUpdateTask = () => {
             });
         },
     });
-
-
 };

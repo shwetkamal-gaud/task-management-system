@@ -7,7 +7,7 @@ export interface FilteredTask {
     title: string;
     category: string;
     date: Date;
-    discription: string;
+    description: string;
     status: string;
 }
 
@@ -21,7 +21,8 @@ export const fetchFilteredTasks = async (
         let taskQuery = (collection(db, "tasks"));
         let q;
         if (startDate && endDate) {
-            q = query(taskQuery, where("date", ">=", startDate), where("date", "<=", endDate));
+            console.log(Timestamp.fromDate(new Date(startDate))), Timestamp.fromDate(new Date(endDate))
+            q = query(taskQuery, where("date", ">=", Timestamp.fromDate(new Date(startDate))), where("date", "<=", Timestamp.fromDate(new Date(endDate))));
         }
 
         if (category) {
@@ -37,8 +38,8 @@ export const fetchFilteredTasks = async (
                 id: doc.id,
                 title: data.title,
                 category: data.category,
-                date: data.date.toDate(),
-                discription: data.discription,
+                date: data.date,
+                description: data.description,
                 status: data.status
             });
         });
@@ -48,6 +49,7 @@ export const fetchFilteredTasks = async (
                 task.title.toLowerCase().includes(searchQuery.toLowerCase())
             );
         }
+        console.log("sdbaksbl", tasks.map((items) => items.date))
         return tasks;
     } catch (error) {
         console.error("Error fetching tasks:", error);
@@ -61,10 +63,9 @@ export const addTask = async (title: string, status: string, description: string
         const user = auth.currentUser;
 
         if (!user) throw new Error("User not authenticated");
-
         const docRef = await addDoc(collection(db, "tasks"), {
             title,
-            description,
+            description: description,
             category: taskCategory,
             status,
             date: Timestamp.fromDate(new Date(date)),
@@ -96,9 +97,9 @@ export const deleteMultipleTasks = async (taskIds: string[]) => {
     }
 }
 
-export const updateTask = async (taskId: string, updatedFields: Partial<FilteredTask>) => {
+export const updateTask = async (taskId: string, updatedFields: { title: string, status: string, description: string, taskCategory: string, date: string }) => {
     try {
-        await updateDoc(doc(db, "tasks", taskId), updatedFields);
+        await updateDoc(doc(db, "tasks", taskId), { ...updatedFields, date: Timestamp.fromDate(new Date(updatedFields.date)) });
         console.log(`Task ${taskId} updated successfully`);
     } catch (error) {
         console.error("Error updating task:", error);

@@ -11,9 +11,13 @@ import { getAuth, signOut } from 'firebase/auth'
 import LogoutIconSvg from './assets/LogoutIconSvg'
 import { useNavigate } from 'react-router'
 import Dropdown from './components/Dropdown'
-import { fetchFilteredTasks, FilteredTask } from './firestore'
+import { fetchFilteredTasks, FilteredTask, updateTask } from './firestore'
 import Modal from './components/Modal'
 import { useAddTask } from './hooks/useAdd'
+import { useSelector } from 'react-redux'
+import { RootState } from './redux/store'
+import { IS_EDIT, SET_DELETED, SET_UPDATED } from './redux/actions/actions'
+import { useDispatch } from 'react-redux'
 
 interface Task {
   id: number;
@@ -30,7 +34,6 @@ const taskTypes: Task[] = [
 function App() {
   const [view, setView] = useState<"list" | "board">("list");
   const { data: user } = useAuth();
-  const statuses = ["To-Do", "In-Progress", "Completed"];
   const [tasks, setTasks] = useState<FilteredTask[]>([])
   const [category, setCategory] = useState('')
   const [startDate, setStartDate] = useState<Date>();
@@ -42,15 +45,17 @@ function App() {
   const [taskCategory, setTaskCategory] = useState('')
   const [date, setDueDate] = useState('');
   const [status, setTaskStatus] = useState("");
+
   const [attachment, setAttachment] = useState<File | null>(null);
   const { mutate } = useAddTask();
-
-
+  const [isEdit, setIsEdit] = useState('')
+  const { is_deleted, is_updated, is_edit } = useSelector((state: RootState) => state.main)
+  const dispatch = useDispatch()
   const handleEdit = async (item: FilteredTask) => {
-    if (item.category || item.date || item.discription || item.status || item.title) {
+    if (item.category || item.date || item.description || item.status || item.title) {
       setTitle(item.title)
-      setDescription(item.discription)
-      setDueDate(item.date.toISOString());
+      setDescription(item.description)
+      setDueDate(item.date.toISOString().split("T")[0]);
       setTaskStatus(item.status)
       setTaskCategory(item.category)
     }
@@ -69,12 +74,21 @@ function App() {
       console.log(e)
     }
   }
+  useEffect(() => {
+    setIsEdit(is_edit)
+    console.log(is_edit)
+  }, [is_edit])
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (title && date && description && taskCategory && status) {
-      await mutate({ title, status, description, taskCategory, date });
-      setShow(false)
+    if (isEdit) {
+      await updateTask(isEdit, { title, status, description, taskCategory, date })
     }
+    else if (title && date && description && taskCategory && status) {
+      await mutate({ title, status, description, taskCategory, date });
+    }
+    dispatch({ type: IS_EDIT, payload: false })
+    setShow(false)
+
   }
   const handleDateChange = (ranges: any) => {
     const { startDate, endDate } = ranges.selection;
@@ -89,11 +103,12 @@ function App() {
         category,
         searchQuery
       )
-      console.log(filteredTask, 'sdbaksdabsk')
       setTasks(filteredTask)
     }
+    dispatch({ type: SET_DELETED, payload: false })
+    dispatch({ type: SET_UPDATED, payload: false })
     getTask()
-  }, [startDate, endDate, category, searchQuery, fetchFilteredTasks])
+  }, [startDate, endDate, category, searchQuery, fetchFilteredTasks, show, is_deleted, is_updated])
 
 
   return (
@@ -154,8 +169,8 @@ function App() {
 
       </div>
 
-      <div className='flex p-1 flex-col md:border-t-2 md:border-t-gray-300' >
-        {view === 'list' && <div className='hidden md:grid grid-cols-5  items-center text-center '>
+      <div className={'flex p-1 flex-col '} >
+        {view === 'list' && <div className='hidden md:grid grid-cols-5 md:border-t-2 md:border-t-gray-300 pt-2  items-center text-center '>
           <span>
             Task Name
           </span>
@@ -171,30 +186,15 @@ function App() {
         </div>}
         {view === "list" ? (
           <div className='h-full'>
-            <TasksList handleEdit={handleEdit} tasks={tasks} />
+            <TasksList view={view} handleEdit={handleEdit} tasks={tasks} />
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {statuses.map((status) => (
-              <div key={status} className="p-4 bg-gray-100 border rounded-md">
-                <h2 className="mb-4 text-lg font-bold">{status}</h2>
-                {taskTypes.filter((task) => task.status === status).length > 0 ? (
-                  taskTypes
-                    .filter((task) => task.status === status)
-                    .map((task) => (
-                      <div key={task.id} className="p-2 bg-white border rounded-md mb-2">
-                        {task.name}
-                      </div>
-                    ))
-                ) : (
-                  <p className="text-gray-500">No Tasks in {status}</p>
-                )}
-              </div>
-            ))}
+          <div className='h-full'>
+            <TasksList view={view} handleEdit={handleEdit} tasks={tasks} />
           </div>
         )}
       </div>
-      <Modal isOpen={show} onClose={() => setShow(false)} header={title.length > 0 ? 'Edit Task' : 'Create Task'}>
+      <Modal isOpen={show} onClose={() => setShow(false)} header={isEdit ? 'Edit Task' : 'Create Task'}>
         <div>
           <input
             type="text"
@@ -275,7 +275,7 @@ function App() {
         <div className="flex justify-end gap-4">
           <button
             className="py-2 px-4 rounded-lg bg-gray-200"
-            onClick={() => setShow(false)}
+            onClick={() => (setShow(false))}
           >
             Cancel
           </button>
@@ -283,7 +283,7 @@ function App() {
             className="py-2 px-4 rounded-lg bg-purple-500 text-white"
             onClick={handleSubmit}
           >
-            Create
+            {isEdit ? 'Update' : 'Create'}
           </button>
         </div>
       </Modal>

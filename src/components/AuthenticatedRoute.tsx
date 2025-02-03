@@ -10,7 +10,7 @@ interface Prop {
 
 const AuthenticatedRoute = ({ children }: Prop) => {
     const { data: user, isLoading } = useAuth();
-    
+    console.log(user)
     if (isLoading) return <p>Loading...</p>
     if (!user) {
         return <Navigate to={'/login'} />;

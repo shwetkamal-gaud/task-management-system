@@ -11,7 +11,6 @@ import AuthenticatedRoute from './components/AuthenticatedRoute.tsx'
 import 'react-date-range/dist/styles.css'; 
 import 'react-date-range/dist/theme/default.css';
 
-
 const root = document.getElementById('root');
 if (root) {
 

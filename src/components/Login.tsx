@@ -3,54 +3,60 @@ import GoogleSvg from '../assets/GoogleSvg'
 import CirclesBgSvg from '../assets/CirclesBgSvg'
 import TaskListViewSvg from '../assets/TaskListViewSvg'
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
-import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router'
-import { fetchUser } from '../redux/actions/authActions'
+
 import { auth } from '../firebase'
+import MobileBg from '../assets/MobileBg'
 
 const Login = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const handleLogin = async () => {
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
-      dispatch(fetchUser(result.user));
       if (result) navigate('/');
     } catch (error) {
       console.error("Login Error:", error);
     }
   }
+
   return (
-    <div className="flex  gap-4 bg-[#FFF9F9]">
-      <div className="w-full md:w-5/12 flex flex-col items-center justify-center gap-4">
-        <div className="flex flex-col  justify-center gap-1">
-          <div className="flex items-center ">
-            <TaskLogo color='#7B1984' />
-            <h4 style={{ fontSize: '1.7rem' }} className="text-[#7B1984]">
-              TaskBuddy
-            </h4>
-          </div>
-          <span className="text-gray-800 ">
-            Streamline your workflow and track progress effortlessly <br />
-            with our all-in-one task management app.
-          </span>
+    <div className="lg:flex lg:gap-4 bg-[#FFF9F9] h-screen">
+      <div className="w-full lg:w-5/12 relative h-full flex flex-col items-center justify-center">
+        <div className="absolute inset-0 lg:hidden z-0 h-full overflow-hidden w-full">
+          <MobileBg />
         </div>
-        <button onClick={handleLogin}
-          style={{ fontWeight: 500, fontSize: '1.3rem' }}
-          className="w-100  text-white flex items-center justify-center gap-1 p-3 rounded bg-gray-800"
-        >
-          <GoogleSvg /> <span>Continue with Google</span>
-        </button>
+        <div className="relative z-10 flex flex-col items-center gap-4 text-center">
+          <div className="flex flex-col items-center gap-1">
+            <div className="flex items-center">
+              <TaskLogo color='#7B1984' />
+              <h4 className="text-[#7B1984] text-2xl font-bold">TaskBuddy</h4>
+            </div>
+            <span className="text-gray-800">
+              Streamline your workflow and track progress effortlessly <br />
+              with our all-in-one task management app.
+            </span>
+          </div>
+
+          <button
+            onClick={handleLogin}
+            className="w-full max-w-xs text-white text-lg flex items-center justify-center gap-2 p-3 rounded bg-gray-800"
+          >
+            <GoogleSvg /> <span>Continue with Google</span>
+          </button>
+        </div>
       </div>
-      <div className="w-full md:w-7/12 relative flex items-center justify-end">
+
+      <div className="hidden lg:flex xl:w-7/12 overflow-hidden h-full   lg:w-8/13 relative items-center justify-end">
         <CirclesBgSvg />
-        <div className="absolute top-15">
+        <div className="absolute xl:top-15">
           <TaskListViewSvg />
         </div>
       </div>
     </div>
-  )
+  );
 }
+
 
 export default Login
