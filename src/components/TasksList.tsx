@@ -129,7 +129,7 @@ const TasksList = ({ tasks, handleEdit, view }: { tasks: FilteredTask[], handleE
                                 </div>
 
                                 {view === 'list' && (<>
-                                    <span className="text-sm hidden md:inline text-center self-center text-gray-500">{new Date(it.date).toString()}</span>
+                                    <span className="text-sm hidden md:inline text-center self-center text-gray-500">{new Date(it.date).toISOString().split('T')[0]}</span>
                                     <span className="text-sm bg-gray-200 hidden md:inline px-2 m-auto py-1 rounded-md">{it.status}</span>
                                 </>)}
                                 <div

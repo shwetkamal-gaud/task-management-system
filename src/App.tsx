@@ -19,17 +19,8 @@ import { RootState } from './redux/store'
 import { IS_EDIT, SET_DELETED, SET_UPDATED } from './redux/actions/actions'
 import { useDispatch } from 'react-redux'
 
-interface Task {
-  id: number;
-  name: string;
-  status: "To-Do" | "In-Progress" | "Completed";
-}
 
-const taskTypes: Task[] = [
-  { id: 1, name: "Task 1", status: "To-Do" },
-  { id: 2, name: "Task 2", status: "In-Progress" },
-  { id: 3, name: "Task 3", status: "Completed" },
-];
+
 
 function App() {
   const [view, setView] = useState<"list" | "board">("list");

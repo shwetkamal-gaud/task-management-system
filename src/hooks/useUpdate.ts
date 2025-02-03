@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { FilteredTask,  updateTask } from "../firestore";
+import {   updateTask } from "../firestore";
 
 export const useUpdateTask = () => {
     const queryClient = useQueryClient();

@@ -38,7 +38,7 @@ export const fetchFilteredTasks = async (
                 id: doc.id,
                 title: data.title,
                 category: data.category,
-                date: data.date,
+                date: data.date.toDate(),
                 description: data.description,
                 status: data.status
             });
