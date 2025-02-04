@@ -2,6 +2,7 @@ import { getAuth } from "firebase/auth";
 import { db } from "./firebase";
 import { collection, getDocs, query, where, addDoc, Timestamp, deleteDoc, doc, updateDoc } from "firebase/firestore";
 
+
 export interface FilteredTask {
     id: string;
     title: string;
@@ -18,22 +19,28 @@ export const fetchFilteredTasks = async (
     searchQuery: string
 ): Promise<FilteredTask[]> => {
     try {
-        let taskQuery = (collection(db, "tasks"));
-        let q;
+        const auth = getAuth();
+        const user = auth.currentUser;
+        let taskQuery = query(collection(db, "tasks"), where("userId", "==", user?.uid));
         if (startDate && endDate) {
-            console.log(Timestamp.fromDate(new Date(startDate))), Timestamp.fromDate(new Date(endDate))
-            q = query(taskQuery, where("date", ">=", Timestamp.fromDate(new Date(startDate))), where("date", "<=", Timestamp.fromDate(new Date(endDate))));
+            console.log(Timestamp.fromDate(new Date(startDate)), Timestamp.fromDate(new Date(endDate)))
+            taskQuery = query(
+                taskQuery,
+                where("date", ">=", Timestamp.fromDate(new Date(startDate))),
+                where("date", "<=", Timestamp.fromDate(new Date(endDate)))
+            );
         }
 
         if (category) {
-            q = query(taskQuery, where("category", "==", category));
+            taskQuery = query(taskQuery, where("category", "==", category));
         }
 
-        const querySnapshot = await getDocs(q ?? taskQuery);
+        const querySnapshot = await getDocs(taskQuery);
         let tasks: FilteredTask[] = [];
 
         querySnapshot.forEach((doc) => {
             const data = doc.data();
+            console.log(data.date,"salkshlk")
             tasks.push({
                 id: doc.id,
                 title: data.title,
@@ -49,7 +56,6 @@ export const fetchFilteredTasks = async (
                 task.title.toLowerCase().includes(searchQuery.toLowerCase())
             );
         }
-        console.log("sdbaksbl", tasks.map((items) => items.date))
         return tasks;
     } catch (error) {
         console.error("Error fetching tasks:", error);

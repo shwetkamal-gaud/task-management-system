@@ -101,7 +101,6 @@ function App() {
     getTask()
   }, [startDate, endDate, category, searchQuery, fetchFilteredTasks, show, is_deleted, is_updated])
 
-
   return (
     <div className="w-full h-full mx-auto p-4" >
       <div className='flex justify-between'>
@@ -138,13 +137,13 @@ function App() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 items-center jusitfy-between w-full gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 items-center jusitfy-between w-full gap-4 mb-6">
         <div className='flex flex-col md:flex-row gap-2'>
           <span>filter by:</span>
           <Dropdown btnBolor='white' selected={category} setSelected={setCategory} isIcon direction='dropdown' items={['Work', 'Personal']} />
           <Dropdown isDate btnBolor='white' direction='dropdown' handleDateChange={(ranges) => handleDateChange(ranges)} startDate={startDate} endDate={endDate} />
         </div>
-        <div className='flex justify-end gap-2'>
+        <div className='flex flex-col md:flex-row justify-end gap-2'>
           <div className="relative">
             <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
               <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
