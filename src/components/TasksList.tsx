@@ -85,7 +85,7 @@ const TasksList = ({ tasks, handleEdit, view }: { tasks: FilteredTask[], handleE
     const memoizedTasks = useMemo(() => tasks, [tasks])
     console.log(memoizedTasks, "memo")
     return (
-        <div className={view === 'list' ? 'grid gird-cols1' : 'grid grid-cols-4 gap-3'} >
+        <div className={view === 'list' ? 'grid gird-cols1' : 'grid grid-cols-3 gap-3'} >
             {items.map((item) => (
                 <div key={item.id}>
                     {view === 'list' && <div
@@ -108,14 +108,14 @@ const TasksList = ({ tasks, handleEdit, view }: { tasks: FilteredTask[], handleE
                         {view === 'board' && (<div style={{
                             backgroundColor: item.color,
 
-                        }} className='items-start rounded p-2'>
+                        }} className='items-start px-3  rounded p-2'>
                             <h2 className="text-xl font-bold">{item.categories}</h2>
                         </div>)}
                         {memoizedTasks.filter((filtered) => filtered.status === item.categories).map((it) => (
                             <li
                                 style={{ cursor: 'pointer' }}
                                 key={it.id}
-                                className={view === 'list' ? "grid grid-cols-1  md:grid-cols-5 bg-white rounded-lg p-2 hover:shadow-lg" : 'flex flex-col justify-between h-35 bg-white rounded-lg p-2 hover:shadow-lg'}
+                                className={view === 'list' ? "grid grid-cols-1  md:grid-cols-5 bg-white rounded-lg p-2 hover:shadow-lg" : 'flex flex-col justify-between h-35 bg-white rounded-lg p-3 hover:shadow-lg'}
                             >
                                 <div className={view === 'list' ? "flex items-center  gap-3" : 'flex items-center justify-between '}>
                                     {view === 'list' && <input

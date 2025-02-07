@@ -143,12 +143,12 @@ function App() {
         </div>
         <div className='flex flex-col'>
           <div className='flex gap-1 items-center'>
-            <img width={30} height={30} style={{ borderRadius: '50%' }} src={photoURL ?? ''} alt={name ?? 'user'} />
-            <span className='text-gray-400'>{name ?? ''}</span>
+            {photoURL && <img width={30} height={30} style={{ borderRadius: '50%' }} src={photoURL ?? ''} alt={name ?? 'user'} />}
+            {name && <span className='text-gray-400'>{name ?? ''}</span>}
           </div>
           <button onClick={logOut} className='m-auto flex text-sm items-center gap-1 bg-pink-100 rounded-lg px-3 py-2'>
-            <LogoutIconSvg />
-            Logout
+            {user && <LogoutIconSvg />}
+            {user ? 'Logout' : 'Login'}
           </button>
         </div>
       </div>
