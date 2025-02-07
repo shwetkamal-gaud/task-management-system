@@ -18,6 +18,7 @@ import { useSelector } from 'react-redux'
 import { RootState } from './redux/store'
 import { IS_EDIT, SET_DELETED, SET_UPDATED } from './redux/actions/actions'
 import { useDispatch } from 'react-redux'
+import { auth } from './firebase'
 
 
 
@@ -36,7 +37,8 @@ function App() {
   const [taskCategory, setTaskCategory] = useState('')
   const [date, setDueDate] = useState('');
   const [status, setTaskStatus] = useState("");
-
+  const [name, setName] = useState(user?.displayName)
+  const [photoURL, setPhotoURL] = useState(user?.photoURL)
   const [attachment, setAttachment] = useState<File | null>(null);
   const { mutate } = useAddTask();
   const [isEdit, setIsEdit] = useState('')
@@ -52,8 +54,6 @@ function App() {
     }
     setShow(true)
   }
-
-
   const navigate = useNavigate();
   const logOut = async () => {
     const auth = getAuth()
@@ -71,13 +71,19 @@ function App() {
   }, [is_edit])
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isEdit) {
-      await updateTask(isEdit, { title, status, description, taskCategory, date })
+    if (!auth.currentUser) {
+      localStorage.setItem("task", JSON.stringify({ title, status, description, taskCategory, date }))
+      navigate('/login')
+    } else {
+      if (isEdit) {
+        await updateTask(isEdit, { title, status, description, taskCategory, date })
+      }
+      else if (title && date && description && taskCategory && status) {
+
+        await mutate({ title, status, description, taskCategory, date });
+      }
+      dispatch({ type: IS_EDIT, payload: false })
     }
-    else if (title && date && description && taskCategory && status) {
-      await mutate({ title, status, description, taskCategory, date });
-    }
-    dispatch({ type: IS_EDIT, payload: false })
     setShow(false)
 
   }
@@ -86,6 +92,13 @@ function App() {
     setStartDate(startDate);
     setEndDate(endDate);
   }
+  let localTask = localStorage.getItem("task")
+  // useEffect(()=>{
+  //   if(localTask !== undefined){
+  //     setT
+  //   }
+  // },[localTask])
+
   useEffect(() => {
     const getTask = async () => {
       const filteredTask = await fetchFilteredTasks(
@@ -98,8 +111,10 @@ function App() {
     }
     dispatch({ type: SET_DELETED, payload: false })
     dispatch({ type: SET_UPDATED, payload: false })
+    setName(user?.displayName)
+    setPhotoURL(user?.photoURL)
     getTask()
-  }, [startDate, endDate, category, searchQuery, fetchFilteredTasks, show, is_deleted, is_updated])
+  }, [startDate, user, endDate, category, searchQuery, fetchFilteredTasks, show, is_deleted, is_updated])
 
   return (
     <div className="w-full h-full mx-auto p-4" >
@@ -127,8 +142,8 @@ function App() {
         </div>
         <div className='flex flex-col'>
           <div className='flex gap-1 items-center'>
-            <img width={30} height={30} style={{ borderRadius: '50%' }} src={user?.photoURL ?? ''} alt={user?.displayName ?? 'user'} />
-            <span className='text-gray-400'>{user?.displayName ?? ''}</span>
+            <img width={30} height={30} style={{ borderRadius: '50%' }} src={photoURL ?? ''} alt={name ?? 'user'} />
+            <span className='text-gray-400'>{name ?? ''}</span>
           </div>
           <button onClick={logOut} className='m-auto flex text-sm items-center gap-1 bg-pink-100 rounded-lg px-3 py-2'>
             <LogoutIconSvg />
@@ -208,7 +223,7 @@ function App() {
                 <button
                   className={`py-2 px-4 rounded-lg ${taskCategory === "Work" ? "bg-blue-500 text-white" : "bg-gray-200"
                     }`}
-                  onClick={() => setTaskCategory("Work")}
+                  onClick={(e) => { e.stopPropagation(); setTaskCategory("Work") }}
                 >
                   Work
                 </button>
@@ -217,7 +232,7 @@ function App() {
                     ? "bg-blue-500 text-white"
                     : "bg-gray-200"
                     }`}
-                  onClick={() => setTaskCategory("Personal")}
+                  onClick={(e) => { e.stopPropagation(); setTaskCategory("Personal") }}
                 >
                   Personal
                 </button>

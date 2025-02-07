@@ -7,7 +7,6 @@ import Login from './components/Login.tsx'
 import { Provider } from 'react-redux'
 import store from './redux/store.ts'
 import QueryProviders from './QueryProviders.tsx'
-import AuthenticatedRoute from './components/AuthenticatedRoute.tsx'
 import 'react-date-range/dist/styles.css'; 
 import 'react-date-range/dist/theme/default.css';
 
@@ -20,7 +19,7 @@ if (root) {
         <QueryProviders>
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<AuthenticatedRoute><App /></AuthenticatedRoute>} />
+              <Route path="/" element={<App />} />
               <Route path="/login" element={<Login />} />
             </Routes>
           </BrowserRouter>
