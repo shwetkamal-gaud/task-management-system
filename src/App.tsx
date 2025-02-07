@@ -40,6 +40,7 @@ function App() {
   const [name, setName] = useState(user?.displayName)
   const [photoURL, setPhotoURL] = useState(user?.photoURL)
   const [attachment, setAttachment] = useState<File | null>(null);
+  const [isUser, setIsUser] = useState(true)
   const { mutate } = useAddTask();
   const [isEdit, setIsEdit] = useState('')
   const { is_deleted, is_updated, is_edit } = useSelector((state: RootState) => state.main)
@@ -73,7 +74,8 @@ function App() {
     e.preventDefault();
     if (!auth.currentUser) {
       localStorage.setItem("task", JSON.stringify({ title, status, description, taskCategory, date }))
-      navigate('/login')
+
+      setIsUser(false)
     } else {
       if (isEdit) {
         await updateTask(isEdit, { title, status, description, taskCategory, date })
@@ -83,8 +85,8 @@ function App() {
         await mutate({ title, status, description, taskCategory, date });
       }
       dispatch({ type: IS_EDIT, payload: false })
+      setShow(false)
     }
-    setShow(false)
 
   }
   const handleDateChange = (ranges: any) => {
@@ -92,7 +94,7 @@ function App() {
     setStartDate(startDate);
     setEndDate(endDate);
   }
-  let localTask = localStorage.getItem("task")
+  // let localTask = localStorage.getItem("task")
   // useEffect(()=>{
   //   if(localTask !== undefined){
   //     setT
@@ -167,7 +169,7 @@ function App() {
             </div>
             <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} type="search" id="default-search" className="block w-full px-5 py-2 ps-10 text-sm text-gray-900 border border-gray-300  bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search " style={{ borderRadius: '30px' }} />
           </div>
-          <button onClick={() => setShow(true)} className="px-5 py-2 bg-[#7B1984] text-white " style={{ borderRadius: '20px' }}>
+          <button onClick={() => { setShow(true) }} className="px-5 py-2 bg-[#7B1984] text-white " style={{ borderRadius: '20px' }}>
             Add Task
           </button>
         </div>
@@ -290,6 +292,26 @@ function App() {
           >
             {isEdit ? 'Update' : 'Create'}
           </button>
+        </div>
+      </Modal>
+      <Modal isOpen={isUser === false} onClose={() => setIsUser(true)} header='Please Login'>
+        <div className='flex flex-col'>
+          <h3>For Adding Task user must be autheticated Please Login First</h3>
+
+          <div className="flex justify-end gap-4">
+            <button
+              className="py-2 px-4 rounded-lg bg-gray-200"
+              onClick={() => (setIsUser(true))}
+            >
+              Cancel
+            </button>
+            <button
+              className="py-2 px-4 rounded-lg bg-purple-500 text-white"
+              onClick={() => navigate('/login')}
+            >
+              Login
+            </button>
+          </div>
         </div>
       </Modal>
     </div>
