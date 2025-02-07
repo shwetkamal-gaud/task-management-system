@@ -74,7 +74,6 @@ function App() {
     e.preventDefault();
     if (!auth.currentUser) {
       localStorage.setItem("task", JSON.stringify({ title, status, description, taskCategory, date }))
-
       setIsUser(false)
     } else {
       if (isEdit) {
@@ -218,7 +217,7 @@ function App() {
             rows={4}
             maxLength={300}
           ></textarea>
-          <div className='grid grid-cols-3 gap-2'>
+          <div className='grid grid-cols-1 md:grid-cols-3 gap-2'>
             <div className='flex flex-col gap-1'>
               <span className='text-sm text-gray-500'>Task Category*</span>
               <div className="flex items-center gap-4 mb-4">
@@ -240,6 +239,7 @@ function App() {
                 </button>
               </div>
             </div>
+
             <div className='flex flex-col gap-1'>
               <span className='text-sm text-gray-500'>Due on*</span>
               <input
@@ -261,6 +261,7 @@ function App() {
                 <option value="In Progress">In Progress</option>
                 <option value="Completed">Completed</option>
               </select>
+
             </div>
           </div>
           <div className="border border-dashed border-gray-300 rounded-lg p-4 mb-4 text-center">
@@ -296,7 +297,7 @@ function App() {
       </Modal>
       <Modal isOpen={isUser === false} onClose={() => setIsUser(true)} header='Please Login'>
         <div className='flex flex-col'>
-          <h3>For Adding Task user must be autheticated Please Login First</h3>
+          <h3>For Adding Task user must be authenticated Please Login First</h3>
 
           <div className="flex justify-end gap-4">
             <button
